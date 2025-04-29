@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: mariadb:11
+    container_name: bookstack_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: yourdbrootpass
+      MYSQL_DATABASE: bookstack
+      MYSQL_USER: bookstack
+      MYSQL_PASSWORD: yourdbpass
+    volumes:
+      - db_data:/var/lib/mysql
+
+  bookstack:
+    image: lscr.io/linuxserver/bookstack:latest
+    container_name: bookstack_app
+    restart: unless-stopped
+    environment:
+      PUID: 1000
+      PGID: 1000
+      APP_URL: http://YOUR_UBUNTU_VM_IP:6875
+      DB_HOST: db
+      DB_USER: bookstack
+      DB_PASS: yourdbpass
+      DB_DATABASE: bookstack
+      TZ: America/New_York
+    depends_on:
+      - db
+    ports:
+      - 6875:80
+    volumes:
+      - bookstack_data:/config
+
+volumes:
+  db_data:
+  bookstack_data:
